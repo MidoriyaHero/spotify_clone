@@ -7,6 +7,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Streaming Service</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
+    <style>
+        /* The heart of the matter */
+        
+        .horizontal-scrollable > .row {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .horizontal-scrollable > .row > .col-xs-4 {
+            display: inline-block;
+            float: none;
+        }
+        /* Decorations */
+        
+        .col-xs-4 {
+            color: white;
+            font-size: 24px;
+            padding-bottom: 20px;
+            padding-top: 18px;
+        }
+        
+        .col-xs-4:nth-child(2n+1) {
+            background: green;
+        }
+        
+        .col-xs-4:nth-child(2n+2) {
+            background: black;
+        }
+    </style>
 </head>
 <body style="margin:0; padding:0; background:#121212; font-family:Arial, sans-serif; color:#fff;">
     <div class="sidebar">
@@ -54,7 +83,7 @@
                     </button>
                 </div>
             </form>
-            <div class="search-title">Top Artists</div>
+            <div class="browse-all-title">Top Artists</div>
         </header>
 
 
