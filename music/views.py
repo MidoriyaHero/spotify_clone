@@ -3,24 +3,28 @@ from django.contrib import messages
 from django.contrib.auth.models import User, auth 
 from django.contrib.auth.decorators import login_required
 import requests
+from dotenv import load_dotenv
+import os
+load_dotenv()
+RAPIDAPI_KEY = os.getenv('RAPIDAPI_KEY')
+
 # Create your views here.
-def api_spotify():
-    url = "https://spotify-scraper.p.rapidapi.com/v1/home"
+def api_spotify(url,params=None):
 
     headers = {
-        "x-rapidapi-key": "8081fc2457msh951f68a0584220dp1815fdjsn6b10b117d431",
+        "x-rapidapi-key": RAPIDAPI_KEY,
         "x-rapidapi-host": "spotify-scraper.p.rapidapi.com"
     }
 
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, params= params)
     return response.json()
 
 def top_tracks(content):
     track_details  = []
     if 'sections' in content:
         for track in content['sections']['items'][1]['contents']['items']:
-            name = track.get('name', 'No Name')
-            artist_name = track.get('artists', [{}])[0].get('name', 'No Name')
+            name = track.get('name', 'Unknown')
+            artist_name = track.get('artists', [{}])[0].get('name', 'Unknown')
             track_id = track.get('id', 'No ID')
             cover_url = track.get('cover', [{}])[0].get('url', 'No Url')
             track_details.append({
@@ -29,15 +33,13 @@ def top_tracks(content):
                 'artist': artist_name,
                 'cover_url': cover_url
             })
-
-    print(track_details)
     return track_details 
 
 def top_artists(content):
     artists_info = []
     if 'sections' in content:
         for artist in content['sections']['items'][0]['contents']['items'][:8]:
-            name = artist.get('name', 'No Name')
+            name = artist.get('name', 'Unknown')
             avatar_url = artist.get('visuals', {}).get('avatar', [{}])[0].get('url', 'No URL')
             artist_id = artist.get('id', 'No ID')
             artists_info.append((name, avatar_url, artist_id))
@@ -45,11 +47,29 @@ def top_artists(content):
     return artists_info
 
 def music(request,pk):
-    return render(request, 'music.html')
+    track_id = pk
+    content = api_spotify(url = "https://spotify-scraper.p.rapidapi.com/v1/track/metadata", params = {"trackId":'5ubHAQtKuFfiG4FXfLP804'})
 
+    if content['status'] == True:
+        track_name = content.get('name')
+        artist_name = content.get('artists',[])[0].get('name','Unknown')
+        image_url = content['album']['cover'][1]['url']
+        duration = content.get('durationText')
+        audio_url = content.get('shareUrl')
+        context = {
+            'track_name': track_name,
+            'artist_name': artist_name,
+            'track_image':image_url,
+            'audio_url' : "C:/Users/buitr/Downloads/1.mp3",
+            'duration_text': duration,
+        }
+        return render(request, 'music.html',context)
+    else:
+        return messages.info(request, 'Track not found!!!')
+    
 @login_required(login_url= 'login')
 def index(request):
-    content = api_spotify()
+    content = api_spotify(url = "https://spotify-scraper.p.rapidapi.com/v1/home")
     artis_info = top_artists(content = content)
     top_track_list = top_tracks(content = content)
     one_third_track_list = int(len(top_track_list)/3)

@@ -40,12 +40,21 @@
                 Search
             </a>
         </div>
-
     </div>
-
     <!-- Main content area where we will add the music player -->
     <div class="music-player" style="margin-left:240px; padding:20px; display: flex; justify-content: center; align-items: center; height: calc(100vh - 90px);">
         <!-- Music Player Interface -->
+        <div>
+            <style>
+                h5{
+                    color: red;
+                }
+            </style>
+            
+            {% for message in messages %}
+            <h5>{{message}}</h5>
+            {% endfor %}
+        </div>
         <div class="player-container">
             <br><br><br><br><br>
             <img class="album-cover" src="{{track_image}}" alt="Album Cover">
