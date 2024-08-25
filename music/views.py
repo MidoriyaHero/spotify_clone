@@ -66,7 +66,15 @@ def music(request,pk):
         return render(request, 'music.html',context)
     else:
         return messages.info(request, 'Track not found!!!')
+
+def profile(request,pk):
+
     
+    context = {
+
+    }
+    return render(request, 'profile.html',context)
+
 @login_required(login_url= 'login')
 def index(request):
     content = api_spotify(url = "https://spotify-scraper.p.rapidapi.com/v1/home")
